@@ -64,18 +64,21 @@ async function createRoom() {
     return;
   }
 
-  console.log("Creating room with player_name:", playerName); // Debugging log
+  console.log("Creating room with player_name:", playerName);
 
   try {
     const response = await fetch(`${BACKEND_URL}/create-room`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
       body: JSON.stringify({ player_name: playerName }),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(`Failed to create room: ${errorData.error || response.statusText}`);
+      throw new Error(`Failed to create room: ${errorData.detail || errorData.error || response.statusText}`);
     }
 
     const data = await response.json();
@@ -84,7 +87,7 @@ async function createRoom() {
       playerId = data.player_id;
       connectToRoom(data.room_id);
     } else {
-      alert("Failed to create room: " + (data.error || "Unknown error"));
+      alert("Failed to create room: " + (data.detail || data.error || "Unknown error"));
     }
   } catch (error) {
     alert("Failed to create room: " + error.message);
@@ -101,18 +104,22 @@ async function joinRoom() {
     return;
   }
 
-  console.log("Joining room with room_id:", roomId, "player_name:", playerName); // Debugging log
+  console.log("Joining room with room_id:", roomId, "player_name:", playerName);
 
   try {
     const response = await fetch(`${BACKEND_URL}/join-room`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
       body: JSON.stringify({ room_id: roomId, player_name: playerName }),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(`Failed to join room: ${errorData.error || response.statusText}`);
+      console.error("Join room response error:", errorData);
+      throw new Error(`Failed to join room: ${errorData.detail || errorData.error || response.statusText}`);
     }
 
     const data = await response.json();
@@ -121,7 +128,7 @@ async function joinRoom() {
       playerId = data.player_id;
       connectToRoom(data.room_id);
     } else {
-      alert("Failed to join room: " + (data.error || "Unknown error"));
+      alert("Failed to join room: " + (data.detail || data.error || "Unknown error"));
     }
   } catch (error) {
     alert("Failed to join room: " + error.message);
