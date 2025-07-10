@@ -228,59 +228,172 @@ input[type="text"]:focus {
   border-radius: 10px;
 }
 
-.game-layout {
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 20px;
+#main {
+  margin-top: 2%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-content: center;
+  align-items: center;
 }
 
-.game-board {
-  background: white;
-  border-radius: 15px;
+#board {
+  border: 5px solid black;
+  width: 650px;
+  height: 650px;
+  flex-direction: column;
+}
+
+#row1 {
+  display: flex;
+  width: 100%;
+  height: 40%;
+}
+
+#row2 {
+  display: flex;
+  width: 100%;
+  height: 20%;
+}
+
+#row3 {
+  display: flex;
+  width: 100%;
+  height: 40%;
+}
+
+#green {
+  width: 40%;
+  background-color: green;
   padding: 20px;
 }
 
-.board {
-  aspect-ratio: 1;
-  background: linear-gradient(45deg, #f0f8f0, #e8f5e8);
-  border-radius: 10px;
-  display: grid;
-  grid-template-columns: repeat(15, 1fr);
-  gap: 2px;
-  padding: 10px;
+#yellow {
+  width: 40%;
+  background-color: yellow;
+  padding: 20px;
 }
 
-.board-cell {
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 3px;
+#red {
+  width: 40%;
+  background-color: red;
+  padding: 20px;
+}
+
+#blue {
+  width: 40%;
+  background-color: blue;
+  padding: 20px;
+}
+
+.inner {
+  border-radius: 20px;
+  background-color: white;
+  height: 100%;
+  width: 100%;
   display: flex;
-  align-items: center;
+  justify-content: space-evenly;
+  flex-direction: column;
+}
+
+#upper {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  padding: 5%;
+}
+
+#lower {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  align-content: center;
+  padding: 5%;
+}
+
+.g_green, .g_yellow, .g_red, .g_blue {
+  display: flex;
   justify-content: center;
-  position: relative;
-  min-height: 20px;
+  border-radius: 10%;
+  width: 100%;
+  height: 100%;
+  margin-right: 10%;
+  box-shadow: 3px 3px 3px 3px gray;
 }
 
-.player-piece {
-  width: 12px;
-  height: 12px;
+.g_green { background-color: green; }
+.g_yellow { background-color: yellow; }
+.g_red { background-color: red; }
+.g_blue { background-color: blue; }
+
+#yellow_move {
+  display: grid;
+  width: 20%;
+  height: 100%;
+  grid-template-columns: 33% 33% 33%;
+}
+
+#red_move {
+  display: grid;
+  width: 20%;
+  height: 100%;
+  grid-template-columns: 33% 33% 33%;
+}
+
+#green_move {
+  display: grid;
+  width: 40%;
+  height: 100%;
+  grid-template-rows: 33% 33% 33%;
+  grid-template-columns: 16.5% 16.5% 16.5% 16.5% 16.5% 16.5%;
+}
+
+#blue_move {
+  display: grid;
+  width: 40%;
+  height: 100%;
+  grid-template-rows: 33% 33% 33%;
+  grid-template-columns: 16.5% 16.5% 16.5% 16.5% 16.5% 16.5%;
+}
+
+.box {
+  width: 100%;
+  height: 100%;
+  border: 1px solid black;
+}
+
+.box-y { background-color: yellow; }
+.box-g { background-color: green; }
+.box-b { background-color: blue; }
+.box-r { background-color: red; }
+
+#multicolor {
+  width: 20%;
+  height: 100%;
+  box-shadow: inset 0 25px 10px 0 yellow, inset 0 -25px 10px 0 red, inset 50px 0 50px 0 green, inset 0 0 50px 35px blue;
+}
+
+#r1, #r2, #r3, #r4, #b1, #b2, #b3, #b4, #g1, #g2, #g3, #g4, #y1, #y2, #y3, #y4 {
+  border: 1px solid black;
+  box-shadow: 3px 3px 5px black;
   border-radius: 50%;
-  border: 2px solid white;
-  position: absolute;
+  width: 90%;
+  height: 90%;
+  margin: auto;
+  cursor: pointer;
 }
 
-.player-piece.red {
-  background: #dc3545;
-}
-.player-piece.blue {
-  background: #007bff;
-}
-.player-piece.green {
-  background: #28a745;
-}
-.player-piece.yellow {
-  background: #ffc107;
-}
+#r1, #r2, #r3, #r4 { background-image: linear-gradient(red, rgb(255, 191, 172)); }
+#b1, #b2, #b3, #b4 { background-image: linear-gradient(blue, rgb(0, 110, 255)); }
+#g1, #g2, #g3, #g4 { background-image: linear-gradient(green, rgb(94, 255, 0)); }
+#y1, #y2, #y3, #y4 { background-image: linear-gradient(yellow, rgb(255, 166, 0)); }
+
+#r1, #b1, #g1, #y1 { z-index: 1; }
+#r2, #b2, #g2, #y2 { z-index: 2; }
+#r3, #b3, #g3, #y3 { z-index: 3; }
+#r4, #b4, #g4, #y4 { z-index: 4; }
 
 .game-sidebar {
   display: flex;
@@ -339,16 +452,19 @@ input[type="text"]:focus {
 }
 
 @media (max-width: 768px) {
-  .game-layout {
-    grid-template-columns: 1fr;
+  #main {
+    flex-direction: column;
+  }
+
+  #board {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
   }
 
   .game-sidebar {
+    width: 100%;
     order: -1;
-  }
-
-  .board {
-    grid-template-columns: repeat(10, 1fr);
   }
 
   .btn {
