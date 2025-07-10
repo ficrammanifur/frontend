@@ -64,12 +64,19 @@ async function createRoom() {
     return;
   }
 
+  console.log("Creating room with player_name:", playerName); // Debugging log
+
   try {
     const response = await fetch(`${BACKEND_URL}/create-room`, {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `player_name=${encodeURIComponent(playerName)}`,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ player_name: playerName }),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Failed to create room: ${errorData.error || response.statusText}`);
+    }
 
     const data = await response.json();
 
@@ -80,7 +87,7 @@ async function createRoom() {
       alert("Failed to create room: " + (data.error || "Unknown error"));
     }
   } catch (error) {
-    alert("Failed to create room. Backend might be offline.");
+    alert("Failed to create room: " + error.message);
     console.error("Create room error:", error);
   }
 }
