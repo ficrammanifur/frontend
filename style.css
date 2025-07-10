@@ -202,7 +202,6 @@ input[type="text"]:focus {
   margin-top: 30px;
 }
 
-/* Game Screen Styles */
 #game-screen .card {
   max-width: none;
   margin: 0;
@@ -339,7 +338,6 @@ input[type="text"]:focus {
   color: #666;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .game-layout {
     grid-template-columns: 1fr;
