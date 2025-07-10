@@ -150,6 +150,7 @@ function connectToRoom(roomId) {
 
   websocket.onmessage = (event) => {
     const message = JSON.parse(event.data);
+    console.log("Received message:", message);
     handleWebSocketMessage(message);
   };
 
@@ -165,8 +166,6 @@ function connectToRoom(roomId) {
 }
 
 function handleWebSocketMessage(message) {
-  console.log("Received message:", message);
-
   switch (message.type) {
     case "room_update":
       updateRoomState(message.room);
@@ -174,9 +173,13 @@ function handleWebSocketMessage(message) {
     case "game_started":
       updateRoomState(message.room);
       showScreen("game");
+      setupPieceListeners();
       break;
     case "dice_rolled":
       updateDiceResult(message.dice);
+      updateRoomState(message.room);
+      break;
+    case "piece_moved":
       updateRoomState(message.room);
       break;
   }
@@ -189,6 +192,7 @@ function updateRoomState(room) {
     renderLobbyPlayers(room.players);
     updateStartButton(room.players.length);
   } else if (currentScreen === "game") {
+    console.log("Rendering game board for room:", room);
     renderGameBoard(room);
     renderGamePlayers(room.players);
     updateGameControls(room);
@@ -230,25 +234,49 @@ function updateStartButton(playerCount) {
 }
 
 function renderGameBoard(room) {
-  const board = document.getElementById("board");
-  board.innerHTML = "";
+  const homeIds = {
+    red: ["g_r1", "g_r2", "g_r3", "g_r4"],
+    green: ["g_g1", "g_g2", "g_g3", "g_g4"],
+    yellow: ["g_y1", "g_y2", "g_y3", "g_y4"],
+    blue: ["g_b1", "g_b2", "g_b3", "g_b4"],
+  };
 
-  for (let i = 0; i < 225; i++) {
-    const cell = document.createElement("div");
-    cell.className = "board-cell";
+  // Clear all board positions
+  document.querySelectorAll("#board .box, #board .g_red, #board .g_green, #board .g_yellow, #board .g_blue").forEach(cell => {
+    cell.innerHTML = "";
+  });
 
-    room.players.forEach((player) => {
-      const cellIndex = Math.floor(player.position / 15) * 15 + (player.position % 15);
-      if (cellIndex === i) {
-        const piece = document.createElement("div");
-        piece.className = `player-piece ${player.color}`;
-        piece.title = player.name;
-        cell.appendChild(piece);
+  room.players.forEach(player => {
+    player.pieces.forEach(piece => {
+      const pieceEl = document.createElement("div");
+      pieceEl.id = piece.id.split("-").pop(); // e.g., "r1", "b2"
+      pieceEl.className = piece.id.split("-").pop(); // Use piece ID as class for styling
+      const target = piece.home ? document.getElementById(homeIds[player.color][parseInt(piece.id.split("-").pop()[1]) - 1]) : document.getElementById(piece.position);
+      if (target) {
+        target.appendChild(pieceEl);
+      } else {
+        console.error(`Target not found for piece ${piece.id} at position ${piece.position}`);
       }
     });
+  });
+}
 
-    board.appendChild(cell);
-  }
+function setupPieceListeners() {
+  const pieceIds = ["r1", "r2", "r3", "r4", "b1", "b2", "b3", "b4", "g1", "g2", "g3", "g4", "y1", "y2", "y3", "y4"];
+  pieceIds.forEach(id => {
+    const piece = document.getElementById(id);
+    if (piece) {
+      piece.addEventListener("click", () => {
+        if (currentRoom && currentRoom.dice_result && currentRoom.players[currentRoom.current_turn].id === playerId) {
+          websocket.send(JSON.stringify({
+            action: "move_piece",
+            player_id: playerId,
+            piece_id: `${playerName}-${id}`,
+          }));
+        }
+      });
+    }
+  });
 }
 
 function renderGamePlayers(players) {
@@ -262,7 +290,7 @@ function renderGamePlayers(players) {
       <div class="player-item-avatar ${player.color}"></div>
       <div class="player-item-info">
         <div class="player-item-name">${player.name}</div>
-        <div class="player-item-position">Position: ${player.position}</div>
+        <div class="player-item-position">Pieces: ${player.pieces.map(p => p.position).join(", ")}</div>
       </div>
     `;
     list.appendChild(item);
@@ -279,10 +307,14 @@ function updateGameControls(room) {
 
   currentTurnSpan.textContent = currentPlayer ? currentPlayer.name : "Unknown";
 
-  if (isMyTurn) {
+  if (isMyTurn && !room.dice_result) {
     rollBtn.disabled = false;
     rollBtn.textContent = "🎲 Roll Dice";
     turnMsg.textContent = "It's your turn!";
+  } else if (isMyTurn && room.dice_result) {
+    rollBtn.disabled = true;
+    rollBtn.textContent = "🎲 Select a piece";
+    turnMsg.textContent = `You rolled a ${room.dice_result}. Select a piece.`;
   } else {
     rollBtn.disabled = true;
     rollBtn.textContent = "🎲 Roll Dice";
@@ -320,6 +352,7 @@ function updateConnectionStatus(status) {
 }
 
 function showScreen(screenName) {
+  console.log("Switching to screen:", screenName);
   Object.values(screens).forEach((screen) => {
     screen.classList.remove("active");
   });
