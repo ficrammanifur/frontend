@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎲 Ludo Multiplayer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Menu Screen -->
+        <div id="menu-screen" class="screen active">
+            <div class="card">
+                <h1>🎲 Ludo Multiplayer</h1>
+                <p>Play with up to 4 friends!</p>
+                
+                <div class="form-group">
+                    <input type="text" id="player-name" placeholder="Enter your name" maxlength="20">
+                </div>
+                
+                <div class="buttons">
+                    <button id="create-room-btn" class="btn btn-primary">
+                        ➕ Create New Room
+                    </button>
+                    
+                    <div class="divider">OR</div>
+                    
+                    <input type="text" id="room-id-input" placeholder="Enter Room ID" maxlength="8">
+                    <button id="join-room-btn" class="btn btn-secondary">
+                        🚪 Join Room
+                    </button>
+                </div>
+                
+                <div id="connection-status" class="status">
+                    <span class="dot offline"></span>
+                    <span>Backend: <span id="backend-status">Checking...</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lobby Screen -->
+        <div id="lobby-screen" class="screen">
+            <div class="card">
+                <h2>Room: <span id="room-code">XXXX</span></h2>
+                <div class="connection-badge" id="connection-badge">Connecting...</div>
+                
+                <div class="players-grid" id="players-grid">
+                    <!-- Players akan di-render di sini -->
+                </div>
+                
+                <div class="lobby-controls">
+                    <p id="player-count">0/4 players joined</p>
+                    <button id="start-game-btn" class="btn btn-primary" disabled>
+                        ▶️ Start Game
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <div class="game-header">
+                <h2>🎲 Ludo Game - Room: <span id="game-room-code">XXXX</span></h2>
+                <div class="turn-info">
+                    <span id="current-turn">Player 1</span>'s turn
+                    <div id="dice-result" class="dice-display">🎲</div>
+                </div>
+            </div>
+            
+            <div class="game-layout">
+                <!-- Game Board -->
+                <div class="game-board">
+                    <div id="board" class="board">
+                        <!-- Board akan di-render di JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Game Controls -->
+                <div class="game-sidebar">
+                    <div class="card">
+                        <h3>Game Controls</h3>
+                        <button id="roll-dice-btn" class="btn btn-primary btn-large" disabled>
+                            🎲 Roll Dice
+                        </button>
+                        <p id="turn-message">Wait for your turn</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>👥 Players</h3>
+                        <div id="game-players-list">
+                            <!-- Players list akan di-render di sini -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
