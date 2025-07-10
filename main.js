@@ -101,12 +101,19 @@ async function joinRoom() {
     return;
   }
 
+  console.log("Joining room with room_id:", roomId, "player_name:", playerName); // Debugging log
+
   try {
     const response = await fetch(`${BACKEND_URL}/join-room`, {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `room_id=${roomId}&player_name=${encodeURIComponent(playerName)}`,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ room_id: roomId, player_name: playerName }),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Failed to join room: ${errorData.error || response.statusText}`);
+    }
 
     const data = await response.json();
 
@@ -114,10 +121,10 @@ async function joinRoom() {
       playerId = data.player_id;
       connectToRoom(data.room_id);
     } else {
-      alert("Failed to join room: " + (data.error || "Room not found"));
+      alert("Failed to join room: " + (data.error || "Unknown error"));
     }
   } catch (error) {
-    alert("Failed to join room. Check room ID or backend status.");
+    alert("Failed to join room: " + error.message);
     console.error("Join room error:", error);
   }
 }
